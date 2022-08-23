@@ -12,17 +12,17 @@ namespace LomasFormApi.Controllers
     public class FormController : ControllerBase
     {
         private readonly IMongoService _mongoService;
+        private readonly IMongoCollection<Form> _collection;
 
         public FormController(IMongoService mongoService)
         {
             _mongoService = mongoService;
+            _collection = _mongoService.GetCollection<Form>("Form");
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(FormRequest request)
         {
-
-            var collection = _mongoService.GetCollection<Form>("Form");
             var form = new Form
             {
                 CreatedAt = DateTime.Now,
@@ -34,21 +34,27 @@ namespace LomasFormApi.Controllers
                 Stared = true,
                 UpdatedAt = DateTime.Now
             };
-            await collection.InsertOneAsync(form);
+            await _collection.InsertOneAsync(form);
             return Ok(form.Id);
+        }
+        [HttpPut]
+        public async Task<IActionResult> Put(Form form)
+        {
+            var filter = Builders<Form>.Filter.Eq(s => s.Id, form.Id);
+            var update = Builders<Form>.Update.Set(c => c.UpdatedAt, DateTime.Now);
+            var newValue =await _collection.FindOneAndReplaceAsync(filter, form);
+            return Ok(newValue);
         }
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var collection = _mongoService.GetCollection<Form>("Form");
-            var test = await collection.Find(x => true).ToListAsync();
+            var test = await _collection.Find(x => true).ToListAsync();
             return Ok(test);
         }
         [HttpGet("id")]
         public async Task<IActionResult> Get(string id)
         {
-            var collection = _mongoService.GetCollection<Form>("Form");
-            var test = await collection.FindAsync(x => x.Id == id);
+            var test = await _collection.FindAsync(x => x.Id == id);
             return Ok(await test.FirstOrDefaultAsync());
         }
     }

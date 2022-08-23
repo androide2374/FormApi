@@ -55,7 +55,8 @@ namespace LomasFormApi.Controllers
         public async Task<IActionResult> Get(string formId)
         {
             var collection = _mongoService.GetCollection<Form>("Form");
-            return Ok(await collection.Find(x => x.Id == formId).ToListAsync());
+            var data = await collection.Find(x => x.Id == formId).FirstOrDefaultAsync();
+            return Ok(data.Questions);
         }
     }
 }
