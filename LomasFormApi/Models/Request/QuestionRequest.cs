@@ -14,6 +14,7 @@ namespace LomasFormApi.Models.Request
         public string QuestionText { get; set; }
         public string QuestionImage { get; set; }
         public QuestionTypes QuestionType { get; set; }
+        public bool IsRequire { get; set; }
 
         public ICollection<OptionsRequest> Options { get; set; }
     }

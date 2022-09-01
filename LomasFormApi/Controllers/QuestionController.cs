@@ -37,7 +37,8 @@ namespace LomasFormApi.Controllers
                     QuestionImage = question.QuestionText,
                     QuestionText = question.QuestionText,
                     QuestionType = question.QuestionType,
-                    UpdateAt = DateTime.Now
+                    UpdateAt = DateTime.Now,
+                    IsRequire=question.IsRequire
                 };
                 quest.Options = new List<Option>();
                 foreach (var item in question.Options)

@@ -30,5 +30,8 @@ namespace Domain.Entities
         [BsonElement("updateAt")]
         public DateTime UpdateAt { get; set; }
         public virtual ICollection<Option> Options { get; set; }
+
+        [BsonElement("isRequire")]
+        public bool IsRequire { get; set; }
     }
 }
