@@ -9,17 +9,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LomasFormApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PersonController : ControllerBase
-    {
-        private readonly IMongoService _mongoService;
+  [Route("api/[controller]")]
+  [ApiController]
+  public class PersonController : ControllerBase
+  {
+    private readonly IMongoService _mongoService;
 
-        public PersonController(IMongoService mongoService)
-        {
-            _mongoService = mongoService;
-        }
-        [HttpPost]
-        public async Task<ActionResult<PersonResponse>> Post() => Ok(new PersonResponse());
+    public PersonController(IMongoService mongoService)
+    {
+      _mongoService = mongoService;
     }
+    [HttpPost]
+    public Task<ActionResult<PersonResponse>> Post() => Task.FromResult<ActionResult<PersonResponse>>(Ok(new PersonResponse()));
+  }
 }

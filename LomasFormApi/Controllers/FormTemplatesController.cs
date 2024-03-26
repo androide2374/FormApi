@@ -10,17 +10,15 @@ namespace LomasFormApi.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  public class FormController : ControllerBase
+  public class FormTemplatesController : ControllerBase
   {
     private readonly IMongoService _mongoService;
     private readonly IMongoCollection<Form> _collection;
-    private readonly IMongoCollection<Form> _collectionTemplates;
 
-    public FormController(IMongoService mongoService)
+    public FormTemplatesController(IMongoService mongoService)
     {
       _mongoService = mongoService;
-      _collection = _mongoService.GetCollection<Form>("Form");
-      _collectionTemplates = _mongoService.GetCollection<Form>("FormTemplates");
+      _collection = _mongoService.GetCollection<Form>("FormTemplates");
     }
 
     [HttpPost]
@@ -35,24 +33,36 @@ namespace LomasFormApi.Controllers
         LastUpdateBy = "pablo",
         Name = request.Name,
         Stared = true,
-        UpdatedAt = DateTime.Now
+        UpdatedAt = DateTime.Now,
+        Questions = processQuestion(request.Questions)
       };
       await _collection.InsertOneAsync(form);
       return Ok(form.Id);
     }
-    [HttpPost("idTemplate")]
-    public async Task<IActionResult> CreateByTemplate(FormRequest request, string idTemplate)
+    private List<Question> processQuestion(List<QuestionRequest> questions)
     {
-      var template = await _collectionTemplates.FindAsync(x => x.Id == idTemplate);
-      var formTemplate = await template.FirstOrDefaultAsync();
-      formTemplate.CreatedAt = DateTime.Now;
-      formTemplate.CreatedBy = request.UserId.ToString();
-      formTemplate.LastUpdateBy = "admin";
-      formTemplate.Stared = true;
-      formTemplate.UpdatedAt = DateTime.Now;
-      formTemplate.Id = ObjectId.GenerateNewId().ToString();
-      await _collection.InsertOneAsync(formTemplate);
-      return Ok(formTemplate.Id);
+      var result = new List<Question>();
+      foreach (var question in questions)
+      {
+        var quest = new Question();
+        quest = new Question
+        {
+          Id = ObjectId.GenerateNewId().ToString(),
+          CreatedAt = DateTime.Now,
+          QuestionImage = question.QuestionText,
+          QuestionText = question.QuestionText,
+          QuestionType = question.QuestionType,
+          UpdateAt = DateTime.Now,
+          IsRequire = question.IsRequire
+        };
+        quest.Options = new List<Option>();
+        foreach (var item in question.Options)
+        {
+          quest.Options.Add(new Option { OptionImage = item.OptionImage, OptionText = item.OptionText, Id = ObjectId.GenerateNewId().ToString() });
+        }
+        result.Add(quest);
+      }
+      return result;
     }
     [HttpPut]
     public async Task<IActionResult> Put(Form form)

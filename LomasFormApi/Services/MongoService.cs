@@ -7,7 +7,7 @@ namespace LomasFormApi.Services
   {
     public IMongoCollection<T> GetCollection<T>(string collectionName)
     {
-      var client = new MongoClient("mongodb://192.168.1.99:27017");
+      var client = new MongoClient("mongodb+srv://androide1169836654:jVY9Gs2khzYc50LR@cluster0.pvrij8t.mongodb.net/?retryWrites=true&w=majority");
       var database = client.GetDatabase("LomasForms");
       var collection = database.GetCollection<T>(collectionName);
       return collection;
